@@ -17,9 +17,11 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.expo.Zing",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.expo.Zing",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
