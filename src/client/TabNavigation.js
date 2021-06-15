@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, TextInput } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FeedNavigation from './Feed/FeedStackNavigation'
@@ -8,7 +8,6 @@ import {Icon, Avatar, Badge} from 'react-native-elements'
 import { Touchable } from 'react-native';
 import Modal from 'react-native-modal'
 import { SafeAreaView } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
 import DataManager from '../server/DataManager'
 import * as ImagePicker from 'expo-image-picker'
 import { LinkPreview } from '@flyerhq/react-native-link-preview'
