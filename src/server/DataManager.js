@@ -66,9 +66,75 @@ const DataManager = {
         .get()
     },
 
-    getDownloadLink: async function(postID, index){
-        const uid = firebase.auth().currentUser.uid
-        return firebase.storage().ref(uid + "/" + postID + "/").child(postID+"_img_"+index).getDownloadURL()
+    getDownloadLink: async function(postID, index, postOwnerID){
+        return firebase.storage().ref(postOwnerID + "/" + postID + "/").child(postID+"_img_"+index).getDownloadURL()
+    },
+
+    likePost: async function(postID){
+        const db = firebase.firestore()
+        db
+        .collection('posts')
+        .doc(postID)
+        .update({
+            numLikes: firebase.firestore.FieldValue.increment(1),
+            numActivities: firebase.firestore.FieldValue.increment(1),
+        })
+    },
+
+    comment: async function(postID, comment){
+        const db = firebase.firestore()
+        db
+        .collection('posts')
+        .doc(postID)
+        .update({
+            numActivities: firebase.firestore.FieldValue.increment(1),
+            activities: firebase.firestore.FieldValue.arrayUnion({
+                type: 'comment',
+                content: comment,
+                owner: firebase.auth().currentUser.uid,
+                ownerName: firebase.auth().currentUser.displayName,
+                timePosted: Date.now()
+            })
+        })
+    },
+
+    connect: async function(postID, message, recipient, recipientName){
+        const db = firebase.firestore()
+        db
+        .collection('posts')
+        .doc(postID)
+        .update({
+            numActivities: firebase.firestore.FieldValue.increment(1),
+            activities: firebase.firestore.FieldValue.arrayUnion({
+                type: 'connect',
+                content: message,
+                owner: firebase.auth().currentUser.uid,
+                ownerName: firebase.auth().currentUser.displayName,
+                timePosted: Date.now()
+            })
+        })
+        db
+        .collection('users')
+        .doc(firebase.auth().currentUser.uid)
+        .update({
+                sentConnectRequests: firebase.firestore.FieldValue.arrayUnion({
+                    recipient,
+                    recipientName,
+                    message,
+                    timeSent: Date.now()
+                })
+        })
+        db
+        .collection('users')
+        .doc(recipient)
+        .update({
+            connectRequests: firebase.firestore.FieldValue.arrayUnion({
+                sender: firebase.auth().currentUser.uid,
+                senderName: firebase.auth().currentUser.displayName,
+                message,
+                timeSent: Date.now()
+            })
+        })
     }
 }
 

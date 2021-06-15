@@ -1,26 +1,33 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, FlatList, Image, Keyboard, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Avatar, SearchBar, Icon } from 'react-native-elements';
 import { LinkPreview } from '@flyerhq/react-native-link-preview'
 import DataManager from '../../server/DataManager';
+import firebase from 'firebase'
+import { TouchableWithoutFeedback } from 'react-native';
+import Modal from 'react-native-modal'
+
 
 export default class Article extends React.Component{
 
     constructor(props){
         super(props)
         this.state = {
-            images: []
+            images: [],
+            commentText: '',
+            connectModalVisible: false,
+            connectMessageText:'',
         }
     }
 
     data = this.props.route.params.data
 
     componentDidMount(){
-        console.log(this.data)
+        //console.log(this.data)
         numImages = this.data.images.length
         for(var i = 0; i < numImages; i++){
-            DataManager.getDownloadLink(this.data.postID, i).then(result =>{
+            DataManager.getDownloadLink(this.data.postID, i, this.data.owner).then(result =>{
                 var newImages = this.state.images
                 newImages.push(result)
                 this.setState({images: newImages})
@@ -28,7 +35,6 @@ export default class Article extends React.Component{
         }
     }
 
-    
 
     renderImageItem = (item) =>{
         return(
@@ -137,19 +143,30 @@ export default class Article extends React.Component{
                             size={18}
                         />
                     </TouchableOpacity>
+
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', backgroundColor:'#E1D4FD', padding:'4%', marginTop:'3%', borderRadius: 5}} onPress={()=>this.setState({connectModalVisible:true})}>
+                        <Icon
+                            name='link'
+                            type='font-awesome-5'
+                            color='black'
+                            size={15}
+                            style={{marginRight:'5%'}}
+                        />
+                        <Text style={{color:'#555', fontWeight:'700', fontSize:15, color:'black'}}>Connect With {this.data.ownerName}</Text>
+                    </TouchableOpacity>
                     
                 </View>
 
                 <View style={feed.footer}>
-                    <View style={{flexDirection:'row', alignItems:'center'}}>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center'}} onPress={()=>DataManager.likePost(this.data.postID)}>
                         <Icon
                             name='lightbulb'
                             type='font-awesome-5'
                             color='gray'
                             size={18}
                         />
-                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'8%'}}>1.0k</Text>
-                    </View>
+                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'13%'}}>{this.data.numLikes}</Text>
+                    </TouchableOpacity>
                     
                     <View style={{flexDirection:'row', alignItems:'center'}}>
                         <Icon
@@ -188,33 +205,94 @@ export default class Article extends React.Component{
 
     render(){
         return(
-            <SafeAreaView style={{backgroundColor:'white'}}>
-                <View style={styles.header}>
-                    <Icon
-                        name='arrow-left'
-                        type='font-awesome-5'
-                        color='gray'
-                        size={18}
-                        onPress={()=>this.props.navigation.pop()}
-                    />
-                    <TouchableOpacity style={styles.notification}>
+            
+                <SafeAreaView style={{backgroundColor:'white'}}>
+                    <Modal isVisible={this.state.connectModalVisible} animationIn='fadeIn' animationOut="fadeOut" hasBackdrop={false} backdropOpacity={1.0} backgroundColor='white' style={{margin:'0%', alignItems:'flex-start',  justifyContent:'flex-start'}}>
+                        <SafeAreaView style={{backgroundColor:'#E1D4FD', flex:1, width: '100%', padding:'5%'}}>
+                            <View style={styles.headerModal}>
+                                <Icon
+                                    name='times'
+                                    type='font-awesome-5'
+                                    color='gray'
+                                    size={18}
+                                    onPress={()=> this.setState({connectModalVisible:false})}
+                                />
+                                <TouchableOpacity style={{paddingVertical:'2%',paddingHorizontal:'5%', backgroundColor:'#0279D2',borderRadius:5}} onPress={()=> DataManager.connect(this.data.postID, this.state.connectMessageText, this.data.owner, this.data.ownerName).then(res => this.setState({connectModalVisible: false}))}>
+                                    <Text style={{color:'white', fontWeight:'700', fontSize:12}}>SEND</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{flexDirection:'row', alignItems:'center', backgroundColor:'#E1D4FD', padding:'4%', marginTop:'3%', borderRadius: 5}}>
+                                <Icon
+                                    name='link'
+                                    type='font-awesome-5'
+                                    color='black'
+                                    size={15}
+                                    style={{marginRight:'5%'}}
+                                />
+                                <Text style={{color:'#555', fontWeight:'700', fontSize:15, color:'black'}}>Connect With {this.data.ownerName}</Text>
+                            </View>
+                            <TextInput 
+                                style={{color:'#444', fontWeight:'600', fontSize:17, backgroundColor:"white", marginHorizontal:"5%", borderRadius:5, padding:'5%', alignItems:'center', justifyContent:'center', paddingTop:'5%'}}
+                                placeholder="Write a message..."
+                                onChangeText={(text)=>this.setState({connectMessageText:text})}
+                                multiline
+                                
+                            />
+                        </SafeAreaView>
+                    </Modal>
+
+                    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+
+                    <View style={styles.header}>
                         <Icon
-                            name='bookmark'
-                            type='font-awesome'
-                            color='#F7CF3A'
-                            size={25}
+                            name='arrow-left'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={18}
+                            onPress={()=>this.props.navigation.pop()}
                         />
-                    </TouchableOpacity>
-                </View>
-                <ScrollView style={{backgroundColor:'#F1F2F4'}}>
-                    {this.feedItemV1()}
-                    <View style={styles.commentSection}>
-                        <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginVertical:'3%', marginLeft:'5%'}}>Activity (32)</Text>
-                        {this.renderCommentItem()}
-                        {this.renderCommentItem()}
+                        <TouchableOpacity style={styles.notification}>
+                            <Icon
+                                name='bookmark'
+                                type='font-awesome'
+                                color='#F7CF3A'
+                                size={25}
+                            />
+                        </TouchableOpacity>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
+                    <ScrollView style={{backgroundColor:'#F1F2F4'}}>
+                        {this.feedItemV1()}
+                        <View style={styles.commentSection} onPress={()=>{}}>
+                            <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginVertical:'3%', marginLeft:'5%'}}>Activity (32)</Text>
+                            <View style={styles.commentBox}>
+                                <View style={{flexDirection: 'row', alignItems:'flex-start', width:'100%', padding:'5%', backgroundColor:'white'}}>
+                                    <Avatar
+                                        rounded
+                                        icon={{name: 'user', type: 'font-awesome'}}
+                                        containerStyle={{backgroundColor:'blue'}}
+                                    />
+                                    <View>
+                                        <Text style={{color:'black', fontWeight:'600', fontSize:12, marginLeft:15}}>{firebase.auth().currentUser.displayName}</Text>
+                                        <TextInput 
+                                            style={{color:'#777', fontWeight:'500', fontSize:14, marginLeft:15, marginTop:5}}
+                                            placeholder="Add a comment..."
+                                            onChangeText={(text)=>this.setState({commentText:text})}
+                                            multiline
+                                            returnKeyType='done'
+                                            onSubmitEditing={()=>DataManager.comment(this.data.postID, this.state.commentText)}
+                                        />
+                                    </View>
+                                </View>
+                                
+                            </View>
+                            {this.renderCommentItem()}
+                            {this.renderCommentItem()}
+                        </View>
+                    </ScrollView>
+
+                    </KeyboardAvoidingView>
+                </SafeAreaView>
+            
             
         )
     }
@@ -236,6 +314,14 @@ const styles = StyleSheet.create({
         backgroundColor:'white',
         paddingHorizontal:'3.5%',
         paddingVertical:'2.5%',
+        flexDirection:"row",
+        justifyContent:"space-between",
+        alignItems:'center',
+    },
+
+    headerModal:{
+        paddingHorizontal:'3.5%',
+        paddingTop:'2.5%',
         flexDirection:"row",
         justifyContent:"space-between",
         alignItems:'center',

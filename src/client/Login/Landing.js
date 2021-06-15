@@ -15,9 +15,9 @@ export default class Landing extends React.Component{
         this.state={
             loginModalVisible: false,
             signupModalVisible: false,
-            email: 'jasonzhao1562@gmail.com',
-            password : 'Cguyq293$',
-            username: 'Jason_Zhao',
+            email: '',
+            password : '',
+            username: '',
         }
     }
 
@@ -27,7 +27,7 @@ export default class Landing extends React.Component{
           .createUserWithEmailAndPassword(this.state.email, this.state.password)
           .then((userCredential) => {
               firebase.auth().currentUser.updateProfile({
-                  displayName: 'PandaRussia'
+                  displayName: this.state.username
               })
             //console.log(firebase.auth().currentUser)
           })
@@ -83,7 +83,7 @@ export default class Landing extends React.Component{
                     <TextInput
                         style={loginStyles.textInput}
                         placeholder="Username/Email"
-                        onChangeText={(text)=>this.setState({username:text})}
+                        onChangeText={(text)=>this.setState({email:text})}
                     />
                     <TextInput
                         style={loginStyles.textInput}

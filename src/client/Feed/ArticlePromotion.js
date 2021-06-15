@@ -19,7 +19,7 @@ export default class ArticlePromotion extends React.Component{
     componentDidMount(){
         var numImages = this.data.images.length
         for(var i = 0; i < numImages; i++){
-            DataManager.getDownloadLink(this.data.postID, i).then(result =>{
+            DataManager.getDownloadLink(this.data.postID, i, this.data.owner).then(result =>{
                 var newImages = this.state.images
                 newImages.push(result)
                 this.setState({images: newImages})

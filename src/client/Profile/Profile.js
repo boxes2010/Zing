@@ -2,8 +2,17 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import { Avatar, SearchBar, Icon } from 'react-native-elements';
-
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import firebase from 'firebase'
 export default class Profile extends React.Component{
+
+    constructor(props){
+        super(props)
+        this.state = {
+            tabViewIndex: 1,
+            routes: [{ key: 'posts', title: 'post' },{ key: 'activities', title: 'activities' },{ key: 'contacts', title: 'contacts' }]
+        }
+    }
 
     feedItemV1 = () =>{
         return(
@@ -16,7 +25,7 @@ export default class Profile extends React.Component{
                             containerStyle={{backgroundColor:'purple', marginRight:'3%'}}
                         />
                         <View>
-                            <Text style={{color:'#666', fontWeight:'600', fontSize:12}}>PandaRussia</Text>
+                            <Text style={{color:'#666', fontWeight:'600', fontSize:12}}>{firebase.auth().currentUser.displayName}</Text>
                             <Text style={{color:'gray', fontWeight:'400', fontSize:10}}>Posted 24 hours ago</Text>
                         </View>
                     </View>
@@ -83,6 +92,36 @@ export default class Profile extends React.Component{
             </View>
         )
     }
+    postsRoute = () => (
+        <View style={{ flex: 1, backgroundColor: 'white' }} />
+    );
+      
+    activitiesRoute = () => (
+        <View style={{ flex: 1, backgroundColor: 'white' }} />
+    );
+
+    contactsRoute = () => (
+        <View style={{ flex: 1, backgroundColor: 'white' }} />
+    );
+    
+    renderTabBar = props => (
+        <TabBar
+          {...props}
+          indicatorStyle={{ backgroundColor: 'blue', color:'black' }}
+          style={{ backgroundColor: 'white', color:'black', borderTopWidth:0.4, borderColor:'#ddd' }}
+          labelStyle={{fontSize:13, fontWeight:'600'}}
+          tabStyle={{color:'black'}}
+          contentContainerStyle={{color:'black'}}
+          activeColor='black'
+          inactiveColor='black'
+        />
+    );
+
+    renderScene = SceneMap({
+        posts: this.postsRoute,
+        activities: this.activitiesRoute,
+        contacts: this.contactsRoute
+    });
 
     render(){
         return(
@@ -127,7 +166,21 @@ export default class Profile extends React.Component{
                                 />
                             </TouchableOpacity>
                         </View>
+
+                        
                     </View>
+
+                    <TabView
+                        navigationState={{ 
+                            index: this.state.tabViewIndex,
+                            routes: this.state.routes
+                            }}
+                        renderScene={this.renderScene}
+                        onIndexChange = {(i)=>this.setState({tabViewIndex: i})}
+                        renderTabBar={this.renderTabBar}
+                        
+                        style={{backgroundColor:'white'}}
+                    />
 
                     {this.feedItemV1()}
 

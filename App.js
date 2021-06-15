@@ -30,10 +30,10 @@ export default function App() {
     firebase.auth().onAuthStateChanged(user => {
       if(user != null){
         setIsLoggedIn(true)
+      }else{
+        setIsLoggedIn(false)
       }
-    });
-
-    
+    });    
   }, []);
 
 

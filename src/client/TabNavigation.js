@@ -13,6 +13,7 @@ import DataManager from '../server/DataManager'
 import * as ImagePicker from 'expo-image-picker'
 import { LinkPreview } from '@flyerhq/react-native-link-preview'
 import Drawer from 'react-native-drawer'
+import firebase from 'firebase'
 
 const Tab = createBottomTabNavigator();
 
@@ -120,6 +121,14 @@ export default class TabNavigation extends React.Component{
         }
     }
 
+    authSignOut = () => {
+        firebase.auth().signOut().then(() => {
+            console.log("Signed Out")
+          }).catch((error) => {
+            // An error happened.
+          });
+    }
+
     closeControlPanel = () => {
         this._drawer.close()
     };
@@ -138,7 +147,7 @@ export default class TabNavigation extends React.Component{
             links: this.state.links,
             numLikes: 1,
             numActivites: 0,
-            ownerName: 'PandaRussia',
+            ownerName: firebase.auth().currentUser.displayName,
             postType:'idea'
         }
         DataManager.createPost(data)
@@ -176,7 +185,7 @@ export default class TabNavigation extends React.Component{
             images: this.state.images,
             links: this.state.links,
             numActivites: 0,
-            ownerName: 'PandaRussia',
+            ownerName: firebase.auth().currentUser.displayName,
             postType:'promotion'
         }
         DataManager.createPost(data)
@@ -214,7 +223,7 @@ export default class TabNavigation extends React.Component{
             images: this.state.images,
             links: this.state.links,
             numActivites: 0,
-            ownerName: 'PandaRussia',
+            ownerName: firebase.auth().currentUser.displayName,
             postType:'request'
         }
         DataManager.createPost(data)
@@ -359,7 +368,7 @@ export default class TabNavigation extends React.Component{
                             icon={{name: 'user', type: 'font-awesome'}}
                             containerStyle={{backgroundColor:'purple'}}
                         />
-                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>PandaRussia</Text>
+                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>{firebase.auth().currentUser.displayName}</Text>
                     </View>
                     <View style={{ justifyContent:'space-between', marginTop:'5%', backgroundColor:"#F1F2F4", padding:'4%', borderRadius:8}}>
                         
@@ -418,7 +427,7 @@ export default class TabNavigation extends React.Component{
                             icon={{name: 'user', type: 'font-awesome'}}
                             containerStyle={{backgroundColor:'purple'}}
                         />
-                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>PandaRussia</Text>
+                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>{firebase.auth().currentUser.displayName}</Text>
                     </View>
                     <View style={{ justifyContent:'space-between', marginTop:'5%', backgroundColor:"#F1F2F4", padding:'4%', borderRadius:8}}>
                         
@@ -477,7 +486,7 @@ export default class TabNavigation extends React.Component{
                             icon={{name: 'user', type: 'font-awesome'}}
                             containerStyle={{backgroundColor:'purple'}}
                         />
-                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>PandaRussia</Text>
+                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>{firebase.auth().currentUser.displayName}</Text>
                     </View>
                     <View style={{ justifyContent:'space-between', marginTop:'5%', backgroundColor:"#F1F2F4", padding:'4%', borderRadius:8}}>
                         
@@ -588,7 +597,7 @@ export default class TabNavigation extends React.Component{
                             icon={{name: 'user', type: 'font-awesome'}}
                             containerStyle={{backgroundColor:'purple'}}
                         />
-                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>PandaRussia</Text>
+                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>{firebase.auth().currentUser.displayName}</Text>
                     </View>
                     <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginTop:'3%'}}>
                         <TouchableOpacity>
@@ -642,7 +651,7 @@ export default class TabNavigation extends React.Component{
                             icon={{name: 'user', type: 'font-awesome'}}
                             containerStyle={{backgroundColor:'purple'}}
                         />
-                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>PandaRussia</Text>
+                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>{firebase.auth().currentUser.displayName}</Text>
                     </View>
                     <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginTop:'3%'}}>
                         <TouchableOpacity>
@@ -696,7 +705,7 @@ export default class TabNavigation extends React.Component{
                             icon={{name: 'user', type: 'font-awesome'}}
                             containerStyle={{backgroundColor:'purple'}}
                         />
-                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>PandaRussia</Text>
+                        <Text style={{color:'#333', fontWeight:'700', fontSize:15, marginLeft:'2%'}}>{firebase.auth().currentUser.displayName}</Text>
                     </View>
                     <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginTop:'3%'}}>
                         <TouchableOpacity>
@@ -727,15 +736,69 @@ export default class TabNavigation extends React.Component{
 
     renderDrawer = () =>{
         return(
-            <SafeAreaView>
-                <Avatar
-                    rounded
-                    icon={{name: 'user', type: 'font-awesome'}}
-                    containerStyle={{backgroundColor:'blue'}}
-                    onPress={()=>this.props.route.params.openControlPanel()}
+            <SafeAreaView style={drawer.container}>
+                <Icon
+                    name='x'
+                    type='foundation'
+                    color='gray'
+                    size={25}
+                    style={{marginLeft:'5%', marginTop:'7%'}}
                 />
-                <Text style={{color:'gray', fontWeight:'500', marginLeft:'4%'}}>Jason Zhao</Text>
-                
+                <View style={drawer.name}>
+                    <Avatar
+                        rounded
+                        icon={{name: 'user', type: 'font-awesome'}}
+                        containerStyle={{backgroundColor:'blue'}}
+                        size={40}
+                    />
+                    <Text style={{color:'black', fontWeight:'700', fontSize:30}}>Jason Zhao</Text>
+                </View>
+
+                <View style={drawer.pages}>
+                    
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}}>
+                        <Icon
+                            name='bookmark'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={18}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                        />
+                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Saved Posts</Text>
+                    </TouchableOpacity >
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}}>
+                        <Icon
+                            name='chart-bar'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={18}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                        />
+                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Stats</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}}>
+                        <Icon
+                            name='cog'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={18}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                        />
+                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Settings</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}} onPress={()=> this.authSignOut()}>
+                        <Icon
+                            name='sign-out-alt'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={18}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                        />
+                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Sign Out</Text>
+                    </TouchableOpacity>
+                </View>
+
             </SafeAreaView>
         )
         
@@ -830,5 +893,32 @@ const modal = StyleSheet.create({
         marginTop:10,
         borderRadius:20,
     }
+
+});
+
+const drawer = StyleSheet.create({
+    container:{
+        backgroundColor:'white',
+        paddingHorizontal:'3%',
+        flex:1,
+        alignItems:"flex-start",
+        shadowOpacity:0.4,
+
+        width:'99%'
+    },
+
+    name:{
+        backgroundColor:'#F1F2F4', alignSelf:'center', width:'90%', marginTop:'5%', borderRadius:15, padding:'5%'
+    },
+
+    pages:{
+        marginTop:'5%',
+        paddingTop:'5%',
+        borderTopWidth:0.5,
+        borderColor:'#eee',
+        width:"100%"
+    }
+
+
 
 });
