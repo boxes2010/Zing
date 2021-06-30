@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Profile from './Profile'
-import Article from '../Feed/Article'
+import Message from './Message'
+import Chatroom from './Chatroom'
 const Stack = createStackNavigator();
 
-export default class ProfileStackNavigation extends React.Component{
+export default class MessageStackNavigation extends React.Component{
 
     render(){
         return(
@@ -14,8 +14,8 @@ export default class ProfileStackNavigation extends React.Component{
                     headerShown: false
                 }}
             >
-                <Stack.Screen name="Profile" component={Profile} />
-                <Stack.Screen name="Article" component={Article} />
+                <Stack.Screen name="Message" component={Message} />
+                <Stack.Screen name="Chatroom" component={Chatroom} />
             </Stack.Navigator>
             
         )

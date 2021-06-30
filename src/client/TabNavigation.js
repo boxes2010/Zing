@@ -13,12 +13,12 @@ import * as ImagePicker from 'expo-image-picker'
 import { LinkPreview } from '@flyerhq/react-native-link-preview'
 import Drawer from 'react-native-drawer'
 import firebase from 'firebase'
-
+import Message from './Message/MessageNavigation'
 const Tab = createBottomTabNavigator();
 
 function CustomTabBar({ state, descriptors, navigation, showPostEditor}) {
     return (
-      <View style={{ flexDirection: 'row',backgroundColor:"white",justifyContent:"center",alignItems:"center", paddingVertical:'4%', borderTopWidth: 0.3, borderColor: "#ccc" }}>
+      <View style={{ flexDirection: 'row',backgroundColor:"white",justifyContent:"center",alignItems:"center", paddingVertical:'4%', borderTopWidth: 0.3, borderColor: "#ccc", height: '8%' }}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const label =
@@ -750,7 +750,7 @@ export default class TabNavigation extends React.Component{
                         containerStyle={{backgroundColor:'blue'}}
                         size={40}
                     />
-                    <Text style={{color:'black', fontWeight:'700', fontSize:30}}>Jason Zhao</Text>
+                    <Text style={{color:'black', fontWeight:'700', fontSize:30}}>{firebase.auth().currentUser.displayName}</Text>
                 </View>
 
                 <View style={drawer.pages}>
@@ -822,6 +822,7 @@ export default class TabNavigation extends React.Component{
                         <Tab.Screen name="Feed" component={FeedNavigation} initialParams={{openControlPanel: this.openControlPanel, closeControlPanel: this.closeControlPanel}}/>
                         <Tab.Screen name="button" component={FeedNavigation} />
                         <Tab.Screen name="Profile" component={Profile} initialParams={{openControlPanel: this.openControlPanel, closeControlPanel: this.closeControlPanel}}/>
+                        <Tab.Screen name="Message" component={Message}/>
                     </Tab.Navigator>
                 </NavigationContainer>
             </Drawer>

@@ -1,20 +1,32 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableWithoutFeedback } from 'react-native';
 import { Avatar, SearchBar, Icon } from 'react-native-elements';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase'
+import DataManager from '../../server/DataManager';
+
 export default class Profile extends React.Component{
 
     constructor(props){
         super(props)
         this.state = {
             tabViewIndex: 1,
-            routes: [{ key: 'posts', title: 'post' },{ key: 'activities', title: 'activities' },{ key: 'contacts', title: 'contacts' }]
+            routes: [{ key: 'posts', title: 'post' },{ key: 'activities', title: 'activities' },{ key: 'contacts', title: 'contacts' }],
+            user:{
+                posts: []
+            }
         }
     }
 
-    feedItemV1 = () =>{
+    componentDidMount(){
+        DataManager.getUserInfo().then(user =>{
+            this.setState({user: user.data()})
+        })
+        
+    }
+
+    feedItemV1 = (data, index) =>{
         return(
             <View style={feed.container}>
                 <View style={feed.header}>
@@ -25,7 +37,7 @@ export default class Profile extends React.Component{
                             containerStyle={{backgroundColor:'purple', marginRight:'3%'}}
                         />
                         <View>
-                            <Text style={{color:'#666', fontWeight:'600', fontSize:12}}>{firebase.auth().currentUser.displayName}</Text>
+                            <Text style={{color:'#666', fontWeight:'600', fontSize:12}}>{data.ownerName}</Text>
                             <Text style={{color:'gray', fontWeight:'400', fontSize:10}}>Posted 24 hours ago</Text>
                         </View>
                     </View>
@@ -38,14 +50,16 @@ export default class Profile extends React.Component{
                     />
                 </View>
 
-                <View style={feed.body}>
-                    <Text style={{color:'black', fontWeight:'600', fontSize:18, marginTop:'2%'}}>
-                        What is the best thing you came across on the internet today
-                    </Text>
-                    <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginTop:'2%'}}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute.
-                    </Text>
-                </View>
+                <TouchableWithoutFeedback style={feed.body} onPress={()=>{this.props.navigation.push('Article',{data})}}>
+                    <View>
+                        <Text style={{color:'black', fontWeight:'600', fontSize:18, marginTop:'2%'}}>
+                            {data.title}
+                        </Text>
+                        <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginTop:'2%'}}>
+                            {data.description}
+                        </Text>
+                    </View>
+                </TouchableWithoutFeedback>
 
                 <View style={feed.footer}>
                     <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -92,8 +106,43 @@ export default class Profile extends React.Component{
             </View>
         )
     }
+
+    renderFriend = (data, index) =>{
+        return(
+            <TouchableOpacity style={styles.friend}>
+                <View style={{flexDirection: 'row', alignItems:'center'}}>
+                    <Avatar
+                        rounded
+                        icon={{name: 'user', type: 'font-awesome'}}
+                        containerStyle={{backgroundColor:'blue'}}
+                    />
+                    <View>
+                        <Text style={{color:'black', fontWeight:'600', fontSize:12, marginLeft:'5%'}}>{data.ownerName}</Text>
+                        <Text style={{color:'#333', fontWeight:'500', fontSize:14, marginLeft:'5%'}}>{data.content}</Text>
+                    </View>
+                </View>
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop:'3%'}}>
+                    <View style={{flexDirection:'row', alignItems:'center'}}>
+                        <Icon
+                            name='lightbulb'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={18}
+                        />
+                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'8%'}}>1.0k</Text>
+                    </View>
+                    <Text style={{color:'gray', fontWeight:'500', fontSize:12}}>Posted 10 hours ago</Text>
+
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
     postsRoute = () => (
-        <View style={{ flex: 1, backgroundColor: 'white' }} />
+        <FlatList
+            data={this.state.user.posts}
+            renderItem={({item, index}) => this.feedItemV1(item, index)}
+        />
     );
       
     activitiesRoute = () => (
@@ -182,8 +231,6 @@ export default class Profile extends React.Component{
                         style={{backgroundColor:'white'}}
                     />
 
-                    {this.feedItemV1()}
-
                 </View>
                 
             </SafeAreaView>
@@ -232,6 +279,13 @@ const styles = StyleSheet.create({
         backgroundColor:'red',
         borderRadius:10,
         marginRight:"3.5%"
+    },
+
+    friend:{
+        backgroundColor:'white',
+        padding:'4%',
+        borderBottomWidth:0.4,
+        borderColor:'#eee'
     }
 
   });

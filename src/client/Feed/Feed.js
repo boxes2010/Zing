@@ -6,12 +6,16 @@ import { StyleSheet, Text, View, SafeAreaView, FlatList } from 'react-native';
 import { Avatar, SearchBar, Icon } from 'react-native-elements';
 import DataManager from '../../server/DataManager'
 import firebase from 'firebase'
+import Modal from 'react-native-modal'
+import Notification from '../Notification.js/Notification'
+
 export default class Feed extends React.Component{
 
     constructor(props){
         super(props)
         this.state = {
-            feed: []
+            feed: [],
+            notificationModalVisible:false
         }
     }
     componentDidUpdate(){
@@ -33,6 +37,10 @@ export default class Feed extends React.Component{
         }else if (item.postType === 'request'){
             return this.feedItemV3(item, index)
         }
+    }
+
+    setNotificationVisible = (isVisible) =>{
+        this.setState({notificationModalVisible: isVisible})
     }
 
     feedItemV1 = (data, index) =>{
@@ -233,7 +241,7 @@ export default class Feed extends React.Component{
                             <Text style={{color:'gray', fontWeight:'500', marginLeft:'4%'}}>Search</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.notification}>
+                        <TouchableOpacity style={styles.notification} onPress={()=>this.props.navigation.push('Notification', {})}>
                             <Icon
                                 name='bell'
                                 type='font-awesome'

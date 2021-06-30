@@ -16,6 +16,14 @@ const DataManager = {
         return firebase.auth().currentUser.uid
     },
 
+    getUserInfoWithID: function (uid) {
+        const db = firebase.firestore()
+        return db
+          .collection("users")
+          .doc(uid)
+          .get();
+    },
+
     registerUser: async function(){
 
         const usersRef = firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid)
@@ -55,6 +63,13 @@ const DataManager = {
                 }).catch(err => console.log(err))
             })
             db.collection("posts").doc(result.id).update({postID: result.id})
+        })
+
+        db
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .update({
+            posts: firebase.firestore.FieldValue.arrayUnion(post)
         })
 
     },
@@ -120,20 +135,152 @@ const DataManager = {
                 sentConnectRequests: firebase.firestore.FieldValue.arrayUnion({
                     recipient,
                     recipientName,
+                    sender: firebase.auth().currentUser.uid,
+                    senderName: firebase.auth().currentUser.displayName,
                     message,
                     timeSent: Date.now()
-                })
+                }),
+                //sentConnectRequestsIDs: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
         })
         db
         .collection('users')
         .doc(recipient)
         .update({
             connectRequests: firebase.firestore.FieldValue.arrayUnion({
+                recipient,
+                recipientName,
                 sender: firebase.auth().currentUser.uid,
                 senderName: firebase.auth().currentUser.displayName,
                 message,
                 timeSent: Date.now()
+            }),
+            //connectRequestIDs: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
+        })
+    },
+
+    handleContactRequest: async function(action, sender, content){
+        
+        const db = firebase.firestore()
+        if(action === 'accept'){
+            db
+            .collection('users')
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+                connectRequests: firebase.firestore.FieldValue.arrayRemove(content),
+                contacts: firebase.firestore.FieldValue.arrayUnion({
+                    contactID: sender
+                })
             })
+
+            db
+            .collection('users')
+            .doc(sender)
+            .update({
+                sentConnectRequests: firebase.firestore.FieldValue.arrayRemove(content),
+                contacts: firebase.firestore.FieldValue.arrayUnion({
+                    contactID: firebase.auth().currentUser.uid
+                })
+            })
+
+        }else{
+            db
+            .collection('users')
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+                connectRequests: firebase.firestore.FieldValue.arrayRemove(content),
+            })
+
+            db
+            .collection('users')
+            .doc(sender)
+            .update({
+                sentConnectRequests: firebase.firestore.FieldValue.arrayRemove(content),
+            })
+        }
+    },
+
+    createChatRoom: async function(users){
+        var userJSON = {}
+        await users.forEach(user =>{
+            DataManager.getUserInfoWithID(user).then(result => {
+                userJSON[result.data().user_name] = user
+                let res = firebase.database().ref('/chatrooms/').push({
+                    userJSON,
+                    timeStamp: Date.now(),
+                    messages: [{
+                        _id: 1,
+                        text: 'My message',
+                        createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
+                        user: {
+                            _id: 2,
+                            name: 'React Native',
+                            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+                        },
+                        
+                        sent: true,
+                        // Mark the message as received, using two tick
+                        received: true,
+                        // Mark the message as pending with a clock loader
+                        pending: true,
+                        // Any additional custom parameters are passed through
+                        system: false,
+                    },
+        
+                    {
+                        _id: -1,
+                        text: 'First Message',
+                        createdAt: Date.now(),
+                        system: true,
+                        // Any additional custom parameters are passed through
+                    }],
+                    lastMessage: 'This is a new message'
+                })
+
+                firebase.database().ref('/chatrooms/' + res.key).update({
+                    chatroomID: res.key
+                })
+        
+                const db = firebase.firestore()
+                db
+                .collection('chatrooms')
+                .doc(res.key)
+                .set({
+                    users,
+                    timeStamp: Date.now(),
+                    lastMessage: 'This is a new message'
+                })
+        
+                users.forEach(user => {
+                    db
+                    .collection('users')
+                    .doc(user)
+                    .update({
+                        chatrooms: firebase.firestore.FieldValue.arrayUnion(res.key)
+                    })
+                })
+                
+                return res
+            })
+        })
+        
+    },
+
+    getChatRoom: async function(id){
+        return firebase
+        .database()
+        .ref('/chatrooms/' + id)
+        .once('value')
+        .then(snapshot => {
+            return snapshot
+        })
+    },
+
+    sendMessage: async function(chatroom, content){
+        firebase
+        .database()
+        .ref('/chatrooms/' + chatroom)
+        .update({
+            messages: content
         })
     }
 }
