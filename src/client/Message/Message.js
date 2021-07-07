@@ -70,15 +70,15 @@ export default class Message extends React.Component{
                             rounded
                             icon={{name: 'user', type: 'font-awesome'}}
                             containerStyle={{backgroundColor:'blue'}}
-                            size={40}
+                            size={30}
                         />
                         <View>
-                            <Text style={{color:'black', fontWeight:'700', fontSize:14, marginLeft:10}}>{otherUser}</Text>
-                            <Text style={{color:'#777', fontWeight:'600', fontSize:13, marginLeft:10, marginTop:3}}>{item.lastMessage}</Text>
+                            <Text style={{color:'black', fontWeight:'400', fontSize:14, marginLeft:10}}>{otherUser}</Text>
+                            <Text style={{color:'#777', fontWeight:'400', fontSize:11, marginLeft:10, marginTop:3}}>{item.lastMessage}</Text>
                         </View>
                         
                     </View>
-                    <Text style={{color:'#777', fontWeight:'600', fontSize:13, marginLeft:10, marginTop:3, alignSelf:"center"}}>9:48  PM</Text>
+                    <Text style={{color:'#777', fontWeight:'400', fontSize:13, marginLeft:10, marginTop:3, alignSelf:"center"}}>9:48  PM</Text>
                     
                 </View>
             </TouchableOpacity>
@@ -135,7 +135,7 @@ export default class Message extends React.Component{
                                 size={22}
                                 onPress={()=>this.setState({searchModalVisible: false})}
                             />
-                            <Text style={{color:'black', fontWeight:'800', fontSize:17, marginLeft:'5%'}}>New Chat</Text>
+                            <Text style={{color:'black', fontWeight:'400', fontSize:17, marginLeft:'5%'}}>New Chat</Text>
 
                         </View>
                         <TextInput
@@ -153,19 +153,20 @@ export default class Message extends React.Component{
                 </Modal>
                 <View style={styles.container}>
                     <View style={styles.header}>
-                        <Avatar
-                            rounded
-                            icon={{name: 'user', type: 'font-awesome'}}
-                            containerStyle={{backgroundColor:'blue'}}
-                            size={35}
+                        <Icon
+                            name='bars'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={17}
+                            onPress={()=>this.setState({searchModalVisible: true})}
                         />
-                        <Text style={{color:'black', fontWeight:'800', fontSize:17}}>Chat</Text>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:18}}>Messages</Text>
 
                         <Icon
                             name='torsos'
                             type='foundation'
                             color='gray'
-                            size={22}
+                            size={20}
                             onPress={()=>this.setState({searchModalVisible: true})}
                         />
                     </View>
@@ -185,17 +186,17 @@ const styles = StyleSheet.create({
 
     safeArea: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#FAFAFA',
         
       },
   
     container:{
         flex:1,
-        backgroundColor:'#F1F2F4',
+        backgroundColor:'#FAFAFA',
     },
 
     header:{
-        backgroundColor:'white',
+        backgroundColor:'#FAFAFA',
         paddingVertical:'4%',
         paddingHorizontal:'4%',
         flexDirection:"row",
@@ -208,6 +209,13 @@ const styles = StyleSheet.create({
         padding:'4%',
         borderBottomWidth:0.4,
         borderColor:'#eee',
-        marginTop:'2%'
+        marginTop:'4%',
+        marginHorizontal:'4%',
+        borderRadius:8,
+        shadowOpacity:0.05,
+        shadowOffset:{
+            width:0,
+            height:14
+        }
     }
   });

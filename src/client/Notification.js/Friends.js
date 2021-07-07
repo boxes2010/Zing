@@ -6,7 +6,7 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase'
 import DataManager from '../../server/DataManager';
 
-export default class Notification extends React.Component{
+export default class Friends extends React.Component{
 
     constructor(props){
         super(props)

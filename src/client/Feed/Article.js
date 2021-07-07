@@ -7,7 +7,10 @@ import DataManager from '../../server/DataManager';
 import firebase from 'firebase'
 import { TouchableWithoutFeedback } from 'react-native';
 import Modal from 'react-native-modal'
+import Carousel, { Pagination }  from 'react-native-snap-carousel';
 
+const width = Dimensions.get('window').width
+const height = Dimensions.get('window').height
 
 export default class Article extends React.Component{
 
@@ -18,6 +21,7 @@ export default class Article extends React.Component{
             commentText: '',
             connectModalVisible: false,
             connectMessageText:'',
+            activeSlide: 0,
         }
     }
 
@@ -67,8 +71,8 @@ export default class Article extends React.Component{
                         containerStyle={{backgroundColor:'blue'}}
                     />
                     <View>
-                        <Text style={{color:'black', fontWeight:'600', fontSize:12, marginLeft:'5%'}}>{data.ownerName}</Text>
-                        <Text style={{color:'#333', fontWeight:'500', fontSize:14, marginLeft:'5%'}}>{data.content}</Text>
+                        <Text style={{color:'black', fontWeight:'500', fontSize:12, marginLeft:'15%'}}>{data.ownerName}</Text>
+                        <Text style={{color:'#555', fontWeight:'500', fontSize:12, marginLeft:'15%'}}>{data.content}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop:'3%'}}>
@@ -77,12 +81,11 @@ export default class Article extends React.Component{
                             name='lightbulb'
                             type='font-awesome-5'
                             color='gray'
-                            size={18}
+                            size={15}
                         />
-                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'8%'}}>1.0k</Text>
+                        <Text style={{color:'#555', fontWeight:'400', fontSize:13, marginLeft:'12%'}}>1.0k</Text>
                     </View>
-                    <Text style={{color:'gray', fontWeight:'500', fontSize:12}}>Posted 10 hours ago</Text>
-
+                    <Text style={{color:'gray', fontWeight:'400', fontSize:12}}>Posted 10 hours ago</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -92,67 +95,68 @@ export default class Article extends React.Component{
         return(
             <View style={feed.container}>
 
-                <View style={feed.header}>
-                    <View style={{flexDirection:'row', alignItems:'center'}}>
-                        <Avatar
-                            rounded
-                            icon={{name: 'user', type: 'font-awesome'}}
-                            containerStyle={{backgroundColor:'purple', marginRight:'3%'}}
-                        />
-                        <View>
-                            <Text style={{color:'#666', fontWeight:'600', fontSize:12}}>{this.data.ownerName}</Text>
-                            <Text style={{color:'gray', fontWeight:'400', fontSize:10}}>Posted 24 hours ago</Text>
-                        </View>
-                    </View>
-                    <View style={{paddingVertical:'2%',paddingHorizontal:'5%', backgroundColor:'#0279D2',borderRadius:20}}>
-                        <Text style={{color:'white', fontWeight:'700', fontSize:12}}>PROJECT IDEA</Text>
-                    </View>
-                    
-                </View>
-
                 <View style={feed.body}>
-                    <Text style={{color:'black', fontWeight:'600', fontSize:18, marginTop:'2%'}}>
+                    <View style={{justifyContent:'center', alignItems:'center'}}>
+                        <Carousel
+                            ref={(c) => { this._carousel = c; }}
+                            data={this.state.images}
+                            renderItem={({item}) => this.renderImageItem(item)}
+                            sliderWidth = {width}
+                            itemWidth = {width}
+                            layout = {'default'}
+                            layoutCardOffset = {0}
+                            loop={false}
+                            style={{alignSelf:'center', alignItems:'center'}}
+                            contentContainerCustomStyle={{alignSelf:'center', alignItems:'center'}}
+                            containerStyle={{alignSelf:"center", alignItems:"center"}}
+                            onSnapToItem={(index) => this.setState({ activeSlide: index }) }
+                        />
+
+                        <Pagination
+                            dotsLength={this.state.images.length}
+                            activeDotIndex={this.state.activeSlide}
+                            containerStyle={{ paddingTop: "3%", paddingBottom:"5%" }}
+                            dotStyle={{
+                                width: 7,
+                                height: 7,
+                                borderRadius: 5,
+                                marginHorizontal: 8,
+                                backgroundColor: 'black'
+                            }}
+                            inactiveDotStyle={{
+                                // Define styles for inactive dots here
+                            }}
+                            inactiveDotOpacity={0.4}
+                            inactiveDotScale={0.6}
+                        />
+                    </View>
+
+                    <Text style={{color:'black', fontWeight:'500', fontSize:23, marginHorizontal:'7%', marginBottom:"5%"}}>
                         {this.data.title}
                     </Text>
-                    <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginTop:'2%'}}>
+
+                    <Text style={{color:'#444', fontWeight:'400', fontSize:16, marginHorizontal:'7%'}}>
                         {this.data.description}
                     </Text>
 
-                    <Text style={{color:'#555', fontWeight:'700', fontSize:12, marginTop:'4%'}}>IMAGES:</Text>
-                    <FlatList
-                        horizontal={true}
-                        data={this.state.images}
-                        renderItem={({item}) => this.renderImageItem(item)}
-                    />
                     <TouchableOpacity style={styles.linkStyle} onPress={()=>this.props.navigation.push('Link', {data: this.data})}>
                         <View style={{flexDirection:'row', alignItems:'center'}}>
                             <Icon
                                 name='link'
                                 type='font-awesome-5'
                                 color='gray'
-                                size={15}
-                                style={{marginRight:'5%'}}
+                                size={13}
+                                style={{marginRight:'20%'}}
                             />
-                            <Text style={{color:'#555', fontWeight:'700', fontSize:15}}>LINKS</Text>
+                            <Text style={{color:'black', fontWeight:'400', fontSize:15}}>LINKS</Text>
                         </View>
                 
                         <Icon
                             name='chevron-right'
                             type='font-awesome-5'
                             color='gray'
-                            size={18}
+                            size={13}
                         />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', backgroundColor:'#E1D4FD', padding:'4%', marginTop:'3%', borderRadius: 5}} onPress={()=>this.setState({connectModalVisible:true})}>
-                        <Icon
-                            name='link'
-                            type='font-awesome-5'
-                            color='black'
-                            size={15}
-                            style={{marginRight:'5%'}}
-                        />
-                        <Text style={{color:'#555', fontWeight:'700', fontSize:15, color:'black'}}>Connect With {this.data.ownerName}</Text>
                     </TouchableOpacity>
                     
                 </View>
@@ -165,7 +169,7 @@ export default class Article extends React.Component{
                             color='gray'
                             size={18}
                         />
-                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'13%'}}>{this.data.numLikes}</Text>
+                        <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginLeft:'13%'}}>{this.data.numLikes}</Text>
                     </TouchableOpacity>
                     
                     <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -175,7 +179,7 @@ export default class Article extends React.Component{
                             color='gray'
                             size={18}
                         />
-                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'8%'}}>1.0k</Text>
+                        <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginLeft:'8%'}}>{this.data.numActivities}</Text>
                     </View>
                     <TouchableOpacity style={{flexDirection:'row', alignItems:'center'}}>
                         <Icon
@@ -184,7 +188,7 @@ export default class Article extends React.Component{
                             color='gray'
                             size={18}
                         />
-                        <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginLeft:'8%'}}>Share</Text>
+                        <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginLeft:'8%'}}>Share</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{flexDirection:'row', alignItems:'center'}}>
@@ -194,7 +198,7 @@ export default class Article extends React.Component{
                             color='gray'
                             size={18}
                         />
-                        <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginLeft:'8%'}}>Bookmark</Text>
+                        <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginLeft:'8%'}}>Bookmark</Text>
                     </TouchableOpacity>
                     
                 </View>
@@ -203,9 +207,31 @@ export default class Article extends React.Component{
         )
     }
 
+    renderFloater = () =>{
+        return(
+            <View style={feed.header}>
+                <View style={{flexDirection:'row', alignItems:'center'}}>
+                    <Avatar
+                        rounded
+                        icon={{name: 'user', type: 'font-awesome'}}
+                        containerStyle={{backgroundColor:'purple', marginRight:'7%'}}
+                    />
+                    <View>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:15}}>{this.data.ownerName}</Text>
+                        <Text style={{color:'gray', fontWeight:'400', fontSize:9}}>Posted 24 hours ago</Text>
+                    </View>
+                </View>
+                <TouchableOpacity style={{paddingVertical:'3%',paddingHorizontal:'7%', backgroundColor:'#0279D2',borderRadius:20}} onPress={()=>this.setState({connectModalVisible:true})}>
+                    <Text style={{color:'white', fontWeight:'600', fontSize:14}}>Connect</Text>
+                </TouchableOpacity>
+                
+            </View>
+        )
+    }
+
     render(){
         return(
-            <SafeAreaView style={{backgroundColor:'white'}}>
+            <SafeAreaView style={{backgroundColor:'#FAFAFA'}}>
                 <InputAccessoryView nativeID="Next">
                     <View style={styles.accessory}>
                         <TouchableOpacity style={{paddingVertical:'2%',paddingHorizontal:'5%', backgroundColor:'#0279D2',borderRadius:20}} onPress={()=>{DataManager.comment(this.data.postID, this.state.commentText); Keyboard.dismiss()}}>
@@ -214,8 +240,8 @@ export default class Article extends React.Component{
                     </View >
                 </InputAccessoryView>
                 
-                <Modal isVisible={this.state.connectModalVisible} animationIn='fadeIn' animationOut="fadeOut" hasBackdrop={false} backdropOpacity={1.0} backgroundColor='white' style={{margin:'0%', alignItems:'flex-start',  justifyContent:'flex-start'}}>
-                    <SafeAreaView style={{backgroundColor:'#E1D4FD', flex:1, width: '100%', padding:'5%'}}>
+                <Modal isVisible={this.state.connectModalVisible} animationIn='fadeIn' animationOut="fadeOut" hasBackdrop={true} backdropOpacity={0.7} backgroundColor='black' style={{marginHorizontal:'5%', alignItems:'flex-start',  justifyContent:'flex-start', marginVertical:'35%', paddingVertical:"0%", borderRadius:20}}>
+                    <SafeAreaView style={{backgroundColor:'white', flex:1, width: '100%', padding:'5%', borderRadius:20, justifyContent:'space-between'}}>
                         <InputAccessoryView nativeID="Done">
                             <View style={styles.accessory}>
                                 <TouchableOpacity style={{paddingVertical:'2%',paddingHorizontal:'5%', backgroundColor:'#0279D2',borderRadius:20}} onPress={()=>{DataManager.connect(this.data.postID, this.state.connectMessageText, this.data.owner, this.data.ownerName); Keyboard.dismiss(); this.setState({connectMessageText: '', connectModalVisible:false})}}>
@@ -223,19 +249,8 @@ export default class Article extends React.Component{
                                 </TouchableOpacity>
                             </View >
                         </InputAccessoryView>
-                        <View style={styles.headerModal}>
-                            <Icon
-                                name='times'
-                                type='font-awesome-5'
-                                color='gray'
-                                size={18}
-                                onPress={()=> this.setState({connectModalVisible:false})}
-                            />
-                            <TouchableOpacity style={{paddingVertical:'2%',paddingHorizontal:'5%', backgroundColor:'#0279D2',borderRadius:5}} onPress={()=> DataManager.connect(this.data.postID, this.state.connectMessageText, this.data.owner, this.data.ownerName).then(res => this.setState({connectModalVisible: false}))}>
-                                <Text style={{color:'white', fontWeight:'700', fontSize:12}}>SEND</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{flexDirection:'row', alignItems:'center', backgroundColor:'#E1D4FD', padding:'4%', marginTop:'3%', borderRadius: 5}}>
+                        
+                        <View style={{flexDirection:'row', alignItems:'center', backgroundColor:'white', padding:'4%', borderRadius: 5, borderRadius: 20}}>
                             <Icon
                                 name='link'
                                 type='font-awesome-5'
@@ -243,30 +258,46 @@ export default class Article extends React.Component{
                                 size={15}
                                 style={{marginRight:'5%'}}
                             />
-                            <Text style={{color:'#555', fontWeight:'700', fontSize:15, color:'black'}}>Connect With {this.data.ownerName}</Text>
+                            <Text style={{color:'#555', fontWeight:'500', fontSize:15, color:'black'}}>Connect With {this.data.ownerName}</Text>
                         </View>
 
                         <TextInput 
-                            style={{color:'#444', fontWeight:'600', fontSize:17, backgroundColor:"white", marginHorizontal:"5%", borderRadius:5, padding:'5%', alignItems:'center', justifyContent:'center', paddingTop:'5%'}}
+                            style={{color:'#444', fontWeight:'400', fontSize:17, backgroundColor:"white", marginHorizontal:"5%", borderRadius:5, padding:'5%', alignItems:'center', justifyContent:'center', paddingTop:'5%'}}
                             placeholder="Write a message..."
                             onChangeText={(text)=>this.setState({connectMessageText:text})}
                             multiline
                             inputAccessoryViewID="Done"
                             autoCorrect={false}
+                            maxLength={200}
                         />
+
+                        <View style={{alignItems:'center'}}>
+                            <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"4%", paddingHorizontal:'30%', justifyContent:'center', borderRadius:50, marginTop:'10%', marginHorizontal:'10%', width: '90%'}} onPress={()=> DataManager.connect(this.data.postID, this.state.connectMessageText, this.data.owner, this.data.ownerName).then(res => this.setState({connectModalVisible: false}))}>
+                                <Text style={{color:'white', fontWeight:'400', fontSize:15, alignSelf:'center'}}>Send Request</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{backgroundColor:"white", paddingVertical:"4%", paddingHorizontal:'30%', justifyContent:'center', borderRadius:50, marginVertical:'5%', marginHorizontal:'10%', width: '90%', borderWidth: 0.5, borderColor:'#ccc'}} onPress={()=>this.setState({connectModalVisible: false})}>
+                                <Text style={{color:'gray', fontWeight:'400', fontSize:15, alignSelf:'center'}}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        
                     </SafeAreaView>
                 </Modal>
 
                 <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
 
                 <View style={styles.header}>
-                    <Icon
-                        name='arrow-left'
-                        type='font-awesome-5'
-                        color='gray'
-                        size={18}
-                        onPress={()=>this.props.navigation.pop()}
-                    />
+                    <View style={{flexDirection:'row', alignItems:"center"}}>
+                        <Icon
+                            name='chevron-left'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={18}
+                            onPress={()=>this.props.navigation.pop()}
+                        />
+                        <Text style={{color:'black', fontWeight:'400', marginLeft:'15%', fontSize:15}}>Project Idea</Text>
+                    </View>
+                    
                     <TouchableOpacity style={styles.notification}>
                         <Icon
                             name='bookmark'
@@ -276,10 +307,10 @@ export default class Article extends React.Component{
                         />
                     </TouchableOpacity>
                 </View>
-                <ScrollView style={{backgroundColor:'#F1F2F4', height: '93%'}}>
+                <ScrollView style={{backgroundColor:'#FAFAFA', height: '93%'}}>
                     {this.feedItemV1()}
                     <View style={styles.commentSection} onPress={()=>{}}>
-                        <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginVertical:'3%', marginLeft:'5%'}}>Activity (32)</Text>
+                        <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginVertical:'3%', marginLeft:'5%'}}>Activity ({this.data.numActivities})</Text>
                         <View style={styles.commentBox}>
                             <View style={{flexDirection: 'row', alignItems:'flex-start', width:'100%', backgroundColor:'white'}}>
                                 <Avatar
@@ -288,7 +319,7 @@ export default class Article extends React.Component{
                                     containerStyle={{backgroundColor:'blue'}}
                                 />
                                 <View>
-                                    <Text style={{color:'black', fontWeight:'600', fontSize:12, marginLeft:15}}>{firebase.auth().currentUser.displayName}</Text>
+                                    <Text style={{color:'black', fontWeight:'500', fontSize:12, marginLeft:15}}>{firebase.auth().currentUser.displayName}</Text>
                                     <TextInput 
                                         style={{color:'#777', fontWeight:'500', fontSize:14, marginLeft:15, marginTop:2.5}}
                                         placeholder="Add a comment..."
@@ -307,7 +338,12 @@ export default class Article extends React.Component{
                             renderItem={({item, index}) => this.renderCommentItem(item, index)}
                         />
                     </View>
+
+                    <View style={{height: 100}}/>
+                    
                 </ScrollView>
+                {this.renderFloater()}
+            
 
                 </KeyboardAvoidingView>
             </SafeAreaView>
@@ -331,17 +367,17 @@ const styles = StyleSheet.create({
 
     safeArea: {
       flex: 1,
-      backgroundColor: 'white',
+      backgroundColor: '#FAFAFA',
     },
 
     container:{
         flex:1,
-        backgroundColor:'#F1F2F4',
+        backgroundColor:'#FAFAFA',
     },
 
     header:{
-        backgroundColor:'white',
-        paddingHorizontal:'3.5%',
+        backgroundColor:'#FAFAFA',
+        paddingHorizontal:'6%',
         paddingVertical:'2.5%',
         flexDirection:"row",
         justifyContent:"space-between",
@@ -368,14 +404,14 @@ const styles = StyleSheet.create({
     },
 
     imageView:{
-        width:100,
-        height:100,
-        paddingRight:'10%',
-        borderRadius:50
+        width:width ,
+        height:height* 0.3,
+        borderRadius:50,
     },
 
     linkStyle:{
-        width:'100%',
+        marginHorizontal:'7%',
+        marginBottom:'5%',
         borderRadius:5,
         paddingHorizontal:'8%',
         backgroundColor:'#F1F2F4',
@@ -400,21 +436,35 @@ const styles = StyleSheet.create({
 
 const feed = StyleSheet.create({
     container:{
-        backgroundColor:'white',
-        paddingHorizontal:'4%',
+        backgroundColor:'#FAFAFA',
+        paddingHorizontal:'0%',
         paddingVertical:'3%'
     },
 
     header:{
         flexDirection:'row',
         alignItems:'center',
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        position:'absolute',
+        bottom:15,
+        backgroundColor:'white',
+        width:'100%',
+        marginHorizontal:"10%",
+        alignSelf:'center',
+        paddingHorizontal:'4%',
+        paddingVertical:'4%',
+        borderRadius:8,
+        shadowOpacity: 0.2,
+        shadowOffset:{
+            width: 1,
+            height: 30.0
+        }
     },
 
     footer:{
         flexDirection:'row',
         justifyContent:'space-between',
         alignItems:'center',
-        marginTop:"3%"
+        alignSelf:'center'
     }
   });

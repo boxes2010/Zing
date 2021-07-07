@@ -49,13 +49,14 @@ export default class Chatroom extends React.Component{
 
     renderBubble = (props) =>{
         return(
-            <Bubble
-                {...props}
-                wrapperStyle={{
+            <View>
+                <Bubble
+                    {...props}
+                    renderTime={()=> null}
+                    wrapperStyle={{
                     right: {
-                        backgroundColor: 'purple',
-                        borderRadius: 30,
-                        borderBottomRightRadius: 30,
+                        backgroundColor: '#5733FA',
+                        borderRadius: 8,
                         marginBottom: 10,
                         padding: 5,
                         right: 15,
@@ -65,13 +66,23 @@ export default class Chatroom extends React.Component{
                         alignSelf: "flex-end"
                     },
                     left: {
-                        backgroundColor: 'cyan',
+                        backgroundColor:'white',
                         borderRadius: 30,
                         marginBottom: 20,
                         padding: 5,
-                        left: -30
+                        left: 0,
+                        borderRadius: 8,
+                        color:'',
+                        shadowOpacity: 0.1,
+                        shadowOffset:{
+                            width: 0,
+                            height: 5
+                        }
                     }
                 }}/>
+
+            </View>
+                
         )
     }
 
@@ -87,17 +98,17 @@ export default class Chatroom extends React.Component{
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.header}>
                     <Icon
-                        name='arrow-left'
+                        name='chevron-left'
                         type='font-awesome-5'
-                        color='gray'
+                        color='#aaa'
                         size={18}
                         onPress={()=>this.props.navigation.pop()}
                     />
-                    <Text style={{color:'black', fontWeight:'800'}}>{otherUser}</Text>
+                    <Text style={{color:'black', fontWeight:'400', fontSize:17}}>{otherUser}</Text>
                     <Icon
                         name='cog'
                         type='font-awesome-5'
-                        color='gray'
+                        color='#aaa'
                         size={18}
                     />
                 </View>
@@ -110,6 +121,7 @@ export default class Chatroom extends React.Component{
                     }}
                     renderSystemMessage={()=>this.renderSystemMessage()}
                     renderBubble = {props => this.renderBubble(props)}
+                    
                 />
             </SafeAreaView>
         )

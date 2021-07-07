@@ -1,7 +1,8 @@
 import React from 'react';
 import { Touchable } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import { StyleSheet, Text, View, SafeAreaView, TextInput } from 'react-native';
+import {StatusBar} from 'expo-status-bar'
+import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableWithoutFeedback , Keyboard } from 'react-native';
 import { Avatar, SearchBar, Icon } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import "firebase/firestore";
@@ -67,73 +68,100 @@ export default class Landing extends React.Component{
     render(){
         return(
             <SafeAreaView style={styles.container}>
-                <Modal isVisible={this.state.loginModalVisible} backdropOpacity={1.0} backgroundColor='white' style={{margin:'0%', alignItems:'flex-start',  justifyContent:'flex-start', paddingHorizontal:'5%'}}>
+                <StatusBar/>
+                <Modal isVisible={this.state.loginModalVisible} animationIn="slideInRight" animationOut="slideOutRight" backdropOpacity={0.0} backgroundColor='white' style={{margin:'0%'}}>
                     <SafeAreaView></SafeAreaView>
-                    <TouchableOpacity onPress={()=>this.setState({loginModalVisible: false})}>
+                    <TouchableWithoutFeedback style={{flex:1}} onPress={()=>{Keyboard.dismiss()}}><View style={{alignItems:'flex-start',  justifyContent:'flex-start', paddingHorizontal:'7%', flex:1}}>     
                         <Icon
-                            name='arrow-left'
+                            name='chevron-left'
                             type='font-awesome-5'
-                            color='gray'
-                            size={18}
-                            style={{marginTop: '7%'}}
+                            color='#bbb'
+                            size={19}
+                            style={{marginTop: '6%'}}
+                            onPress={()=>this.setState({loginModalVisible: false})}
                         />
-                    </TouchableOpacity>
+                        
+                        <Text style={{color:'black', fontWeight:'400', fontSize:33, marginTop:'8%'}}>Login to</Text>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:33, marginTop:'0.5%'}}>Zing Account</Text>
+                        <TextInput
+                            style={loginStyles.textInput}
+                            placeholder="Username/Email"
+                            onChangeText={(text)=>this.setState({email:text})}
+                            autoCorrect={false}
+                            autoCapitalize={false}
+                        />
+                        <TextInput
+                            style={loginStyles.textInput}
+                            placeholder="Password"
+                            onChangeText={(text)=>this.setState({password:text})}
+                            autoCorrect={false}
+                            autoCapitalize={false}
+                            secureTextEntry={true}
+                        />
                     
-                    <Text style={{color:'#0279D2', fontWeight:'700', fontSize:20, marginTop:'10%'}}>Log in to Zing</Text>
-                    <TextInput
-                        style={loginStyles.textInput}
-                        placeholder="Username/Email"
-                        onChangeText={(text)=>this.setState({email:text})}
-                    />
-                    <TextInput
-                        style={loginStyles.textInput}
-                        placeholder="Password"
-                        onChangeText={(text)=>this.setState({password:text})}
-                    />
-                    <TouchableOpacity onPress={()=>console.log(firebase.auth().currentUser.uid)}>
-                        <Text style={{color:'#0279D2', fontWeight:'700', fontSize:13, marginTop:'5%'}}>FORGOT PASSWORD</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"3.5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:5, marginTop:'5%'}} onPress={()=>this.signInWithEmail()}>
-                        <Text style={{color:'white', fontWeight:'700', fontSize:15}}>LOG IN</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:50, marginTop:'10%', width: '100%'}} onPress={()=>this.signInWithEmail()}>
+                            <Text style={{color:'white', fontWeight:'400', fontSize:15, alignSelf:'center'}}>Login Now</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=>console.log(firebase.auth().currentUser.uid)} style={{alignSelf:'center'}}>
+                            <Text style={{color:'#aaa', fontWeight:'400', fontSize:15, marginTop:'5%'}}>Forgot Password?</Text>
+                        </TouchableOpacity>
+                    </View></TouchableWithoutFeedback>
                 </Modal>
-                <Modal isVisible={this.state.signupModalVisible} backdropOpacity={1.0} backgroundColor='white' style={{margin:'0%', alignItems:'flex-start',  justifyContent:'flex-start', paddingHorizontal:'5%'}}>
+                <Modal isVisible={this.state.signupModalVisible} animationIn="slideInRight" animationOut="slideOutRight" backdropOpacity={0.0} backgroundColor='white' style={{margin:'0%'}}>
                     <SafeAreaView></SafeAreaView>
-                    <TouchableOpacity onPress={()=>this.setState({signupModalVisible: false})}>
+                    <TouchableWithoutFeedback style={{flex:1}} onPress={()=>{Keyboard.dismiss()}}><View style={{alignItems:'flex-start',  justifyContent:'flex-start', paddingHorizontal:'7%', flex:1}}>
                         <Icon
-                            name='arrow-left'
+                            name='chevron-left'
                             type='font-awesome-5'
-                            color='gray'
-                            size={18}
-                            style={{marginTop: '7%'}}
+                            color='#bbb'
+                            size={19}
+                            style={{marginTop: '6%'}}
+                            onPress={()=>this.setState({signupModalVisible: false})}
                         />
-                    </TouchableOpacity>
-                    
-                    <Text style={{color:'#0279D2', fontWeight:'700', fontSize:20, marginTop:'10%'}}>Sign Up with Zing!</Text>
-                    <TextInput
-                        style={loginStyles.textInput}
-                        placeholder="Email"
-                        onChangeText={(text)=>this.setState({email: text})}
-                    />
-                    <TextInput
-                        style={loginStyles.textInput}
-                        placeholder="Username"
-                        onChangeText={(text)=>this.setState({username:text})}
-                    />
-                    <TextInput
-                        style={loginStyles.textInput}
-                        placeholder="Password"
-                        onChangeText={(text)=>this.setState({password:text})}
-                    />
-                    <TextInput
-                        style={loginStyles.textInput}
-                        placeholder="Confirm Password"
-                    />
-                    <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"3.5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:5, marginTop:'5%'}} onPress={()=>this.signUpWithEmail()}>
-                        <Text style={{color:'white', fontWeight:'700', fontSize:15}}>SIGN UP</Text>
-                    </TouchableOpacity>
-                    
+                        
+                        <Text style={{color:'black', fontWeight:'400', fontSize:33, marginTop:'8%'}}>Create new</Text>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:33, marginTop:'0.5%'}}>Zing Account</Text>
+                        <TextInput
+                            style={loginStyles.textInput}
+                            placeholder="Email"
+                            placeholderTextColor="#aaa"
+                            onChangeText={(text)=>this.setState({email: text})}
+                            autoCorrect={false}
+                            autoCapitalize={false}
+                        />
+                        <TextInput
+                            style={loginStyles.textInput}
+                            placeholder="Username"
+                            placeholderTextColor="#aaa"
+                            onChangeText={(text)=>this.setState({username:text})}
+                            autoCorrect={false}
+                            autoCapitalize={false}
+                        />
+                        <TextInput
+                            style={loginStyles.textInput}
+                            placeholder="Password"
+                            placeholderTextColor="#aaa"
+                            onChangeText={(text)=>this.setState({password:text})}
+                            autoCorrect={false}
+                            autoCapitalize={false}
+                            secureTextEntry={true}
+                        />
+                        <TextInput
+                            style={loginStyles.textInput}
+                            placeholder="Confirm Password"
+                            placeholderTextColor="#aaa"
+                            autoCorrect={false}
+                            autoCapitalize={false}
+                            secureTextEntry={true}
+                        />
+                        <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:50, marginTop:'10%', width: '100%'}} onPress={()=>this.signUpWithEmail()}>
+                            <Text style={{color:'white', fontWeight:'400', fontSize:15, alignSelf:'center'}}>Signup Now</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={{backgroundColor:"white", paddingVertical:"5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:50, marginTop:'10%', width: '100%', borderWidth:1, borderColor:'#aaa'}} onPress={()=>this.signUpWithEmail()}>
+                            <Text style={{color:'#gray', fontWeight:'400', fontSize:15, alignSelf:'center'}}>Signup With Google</Text>
+                        </TouchableOpacity>
+                    </View></TouchableWithoutFeedback>
                 </Modal>
 
 
@@ -144,10 +172,11 @@ export default class Landing extends React.Component{
                     <TouchableOpacity style={{borderWidth:1.5, borderColor:"#0279D2", paddingVertical:"3.5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:5}} onPress={()=>this.setState({loginModalVisible:true})}>
                         <Text style={{color:'#0279D2', fontWeight:'700', fontSize:15}}>LOGIN</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"3.5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:5}} onPress={()=>this.setState({signupModalVisible: true})}>
+                    <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"3.5%", paddingHorizontal:'16%', justifyContent:'center', borderRadius:5, }} onPress={()=>this.setState({signupModalVisible: true})}>
                         <Text style={{color:'white', fontWeight:'700', fontSize:15}}>SIGN UP</Text>
                     </TouchableOpacity>
                 </View>
+                
                
             </SafeAreaView>
         )
@@ -178,15 +207,15 @@ const styles = StyleSheet.create({
   const loginStyles = StyleSheet.create({
     textInput:{
         backgroundColor:'white',
-        borderRadius:5,
+
         fontSize:16,
-        borderColor:'gray',
-        borderWidth:0.5,
+        borderColor:'#ddd',
+        borderBottomWidth:1.5,
         justifyContent:'center',
         alignItems:'center',
         width:'100%',
-        paddingHorizontal:'8%',
-        paddingVertical:'7%',
+        paddingHorizontal:'1%',
+        paddingVertical:'6%',
         alignSelf:'center',
         marginTop:'5%'
     },

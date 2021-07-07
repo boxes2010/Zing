@@ -1,10 +1,11 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableWithoutFeedback } from 'react-native';
 import { Avatar, SearchBar, Icon } from 'react-native-elements';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import firebase from 'firebase'
 import DataManager from '../../server/DataManager';
+import { StatusBar } from 'expo-status-bar';
 
 export default class Profile extends React.Component{
 
@@ -166,70 +167,91 @@ export default class Profile extends React.Component{
         />
     );
 
-    renderScene = SceneMap({
-        posts: this.postsRoute,
-        activities: this.activitiesRoute,
-        contacts: this.contactsRoute
-    });
-
     render(){
         return(
             <SafeAreaView style={styles.safeArea}>
-                <View style={styles.container}>
-                    
-                    <View style={styles.header}>
-                        <Icon
-                            name='ellipsis-h'
-                            type='font-awesome-5'
-                            color='gray'
-                            size={18}
-                            containerStyle={{alignSelf:'flex-end'}}
-                        />
-                        <Avatar
-                            rounded
-                            icon={{name: 'user', type: 'font-awesome'}}
-                            
-                            containerStyle={{backgroundColor:'gray', borderWidth:5, padding:'2%', borderColor:'white', shadowOpacity:0.5, shadowOffset:{width:1, height:1}}}
-                            size={120}
-                        />
-                        <Text style={{color:'black', fontWeight:'600', fontSize:27, marginTop:'5%'}}>Jason Zhao</Text>
-                        
-                        
-                        <Text style={{color:'#666', fontWeight:'500', fontSize:12}}>204 points / 1 year / 10 projects</Text>
-                        <View style={styles.jobIconView}>
-                            <TouchableOpacity style={styles.jobIcon}>
-                                <Icon
-                                    name='code'
-                                    type='font-awesome-5'
-                                    color='white'
-                                    size={20}
-                                />
-                            </TouchableOpacity>
+                
 
-                            <TouchableOpacity style={styles.jobIcon}>
-                                <Icon
-                                    name='palette'
-                                    type='font-awesome-5'
-                                    color='white'
-                                    size={20}
-                                />
-                            </TouchableOpacity>
+                
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <View style={{flexDirection:'row'}}>
+                            <Icon
+                                name='chevron-left'
+                                type='font-awesome-5'
+                                color='#ccc'
+                                size={19}
+                                onPress={()=>{}}
+                            />
+
+                            <Text style={{color:'black', fontWeight:'500', marginLeft:'20%', fontSize:15}}>Profile</Text>
+                        </View>
+                        
+
+                        <View style={{flexDirection:'row', alignItems:'center'}}>
+                            <Icon
+                                name='cog'
+                                type='font-awesome-5'
+                                color='#ccc'
+                                size={18}
+                                onPress={()=>{}}
+                            />
+                        </View>
+                    </View>
+                    <ScrollView>
+                        <View style={styles.body}>
+                            <View style={{flexDirection:'row'}}>
+                                <View style={{flexDirection:'row', justifyContent:'space-between', width:'100%'}}>
+                                    <View>
+                                        <Avatar
+                                            rounded
+                                            icon={{name: 'user', type: 'font-awesome'}}
+                                            containerStyle={{backgroundColor:'purple'}}
+                                            size={100}
+                                        />
+                                    
+                                        <Text style={{color:'black', fontWeight:'500', fontSize:23, marginBottom:'8%', marginTop:'25%'}}>{this.state.user.user_name}</Text>
+                                        <Text style={{color:'black', fontWeight:'400', fontSize:15}}>{this.state.user.title}</Text>
+                                    </View>
+                                    <TouchableOpacity style={{backgroundColor:"#0279D2", paddingVertical:"1%", paddingHorizontal:'10%', justifyContent:'center', borderRadius:50, height: '25%', alignSelf:'flex-end'}}>
+                                        <Text style={{color:'white', fontWeight:'500', fontSize:15}}>Add User</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
 
-                        
-                    </View>
+                        <View style={styles.tag}>
+                            <View>
+                                <Text style={{color:'black', fontWeight:'600', fontSize:18, marginBottom:'15%'}}>357</Text>
+                                <Text style={{color:'#aaa', fontWeight:'500', fontSize:13}}>Posts</Text>
 
-                    <TabView
-                        navigationState={{ 
-                            index: this.state.tabViewIndex,
-                            routes: this.state.routes
-                            }}
-                        renderScene={this.renderScene}
-                        onIndexChange = {(i)=>this.setState({tabViewIndex: i})}
-                        renderTabBar={this.renderTabBar}
-                        
-                        style={{backgroundColor:'white'}}
-                    />
+                            </View>
+
+                            <View>
+                                <Text style={{color:'black', fontWeight:'600', fontSize:18, marginBottom:'15%'}}>357</Text>
+                                <Text style={{color:'#aaa', fontWeight:'500', fontSize:13}}>Days</Text>
+
+                            </View>
+
+                            <View>
+                                <Text style={{color:'black', fontWeight:'600', fontSize:18, marginBottom:'15%'}}>357</Text>
+                                <Text style={{color:'#aaa', fontWeight:'500', fontSize:13}}>Likes</Text>
+
+                            </View>
+                        </View>
+
+                        <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingHorizontal:'7%', marginTop:'6%'}}>
+                            <Text style={{color:'black', fontWeight:'500', fontSize:15}}>About</Text>
+                            <Text style={{color:'#bbb', fontWeight:'500', fontSize:10}}>View All</Text>
+                        </View>
+
+                        <Text style={{color:'#797D80', fontWeight:'500', fontSize:15, paddingHorizontal:'7%', marginTop:'6%'}}>{this.state.user.about}</Text>
+
+                        <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingHorizontal:'7%', marginTop:'11%'}}>
+                            <Text style={{color:'black', fontWeight:'500', fontSize:15}}>{this.state.user.user_name}'s Posts</Text>
+                            <Text style={{color:'#bbb', fontWeight:'500', fontSize:10}}>View All</Text>
+                        </View>
+                    </ScrollView>
 
                 </View>
                 
@@ -242,18 +264,22 @@ export default class Profile extends React.Component{
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#FAFAFA',
     },
   
     container:{
         flex:1,
-        backgroundColor:'#F1F2F4',
+        backgroundColor:'#FAFAFA',
     },
   
     header:{
-        backgroundColor:'white',
-        padding:'2.5%',
-        alignItems:'center'
+        backgroundColor:'#FAFAFA',
+        paddingTop:'7%',
+        paddingHorizontal:'7%',
+        alignItems:'center',
+        marginBottom:'5%',
+        flexDirection:'row',
+        justifyContent:'space-between'
     },
 
     editButton:{
@@ -286,6 +312,27 @@ const styles = StyleSheet.create({
         padding:'4%',
         borderBottomWidth:0.4,
         borderColor:'#eee'
+    },
+
+    body:{
+        paddingHorizontal:'7%',
+    },
+
+    tag:{
+        paddingHorizontal:'10%',
+        backgroundColor:'white',
+        flexDirection:'row',
+        justifyContent:'space-between',
+        width:'95%',
+        paddingVertical:'4%',
+        marginTop:'5%',
+        shadowOpacity:0.09,
+        shadowOffset:{
+            width:3,
+            height:3
+        },
+        borderTopRightRadius:10,
+        borderBottomRightRadius:10
     }
 
   });

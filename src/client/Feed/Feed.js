@@ -22,6 +22,7 @@ export default class Feed extends React.Component{
         
         DataManager.registerUser()
     }
+
     componentDidMount(){
         DataManager.retrievePosts().then(result => {
             const data = result.docs.map(doc => doc.data())
@@ -30,6 +31,7 @@ export default class Feed extends React.Component{
     }
 
     chooseFeedItem = (item, index) =>{
+        
         if(item.postType === 'idea'){
             return this.feedItemV1(item, index)
         }else if(item.postType === 'promotion'){
@@ -44,6 +46,7 @@ export default class Feed extends React.Component{
     }
 
     feedItemV1 = (data, index) =>{
+        const iconRef = React.createRef()
         return(
             <View style={feed.container}>
                 <View style={feed.header}>
@@ -51,72 +54,61 @@ export default class Feed extends React.Component{
                         <Avatar
                             rounded
                             icon={{name: 'user', type: 'font-awesome'}}
-                            containerStyle={{backgroundColor:'purple', marginRight:'3%'}}
+                            containerStyle={{backgroundColor:'purple', marginRight:'9%'}}
                         />
                         <View>
-                            <Text style={{color:'#666', fontWeight:'600', fontSize:12}}>{data.ownerName}</Text>
-                            <Text style={{color:'gray', fontWeight:'400', fontSize:10}}>Posted 24 hours ago</Text>
+                            <Text style={{color:'black', fontWeight:'400', fontSize:16, marginBottom:'2.5%'}}>{data.ownerName}</Text>
+                            <Text style={{color:'gray', fontWeight:'400', fontSize:11}}>Posted 24 hours ago</Text>
                         </View>
                     </View>
                     
                     <Icon
-                        name='ellipsis-h'
+                        name='heart'
                         type='font-awesome-5'
                         color='gray'
                         size={18}
+                        ref = {iconRef}
+                        onPress={()=>{DataManager.createBookmark(data.postID); }}
+                        
                     />
                 </View>
 
                 <TouchableWithoutFeedback style={feed.body} onPress={()=>{this.props.navigation.push('Article',{data})}}>
                     <View>
-                        <Text style={{color:'black', fontWeight:'600', fontSize:18, marginTop:'2%'}}>
+                        <Text style={{color:'black', fontWeight:'500', fontSize:18, marginTop:'2%'}}>
                             {data.title}
                         </Text>
-                        <Text style={{color:'#555', fontWeight:'500', fontSize:13, marginTop:'2%'}}>
+                        <Text style={{color:'#222', fontWeight:'400', fontSize:17, marginTop:'2%'}} numberOfLines={5}>
                             {data.description}
                         </Text>
                     </View>
                 </TouchableWithoutFeedback>
 
                 <View style={feed.footer}>
-                    <View style={{flexDirection:'row', alignItems:'center'}}>
-                        <Icon
-                            name='lightbulb'
-                            type='font-awesome-5'
-                            color='gray'
-                            size={18}
-                        />
-                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'8%'}}>1.0k</Text>
+                    <View style={{flexDirection:'row'}}>
+                        <View style={{flexDirection:'row', alignItems:'center', marginRight:'16%'}}>
+                            <Icon
+                                name='lightbulb'
+                                type='font-awesome-5'
+                                color='gray'
+                                size={15}
+                            />
+                            <Text style={{color:'#555', fontWeight:'400', fontSize:13, marginLeft:'20%'}}>{data.numLikes}</Text>
+                        </View>
+                        
+                        <View style={{flexDirection:'row', alignItems:'center'}}>
+                            <Icon
+                                name='comments'
+                                type='font-awesome-5'
+                                color='gray'
+                                size={15}
+                            />
+                            <Text style={{color:'#555', fontWeight:'400', fontSize:13, marginLeft:'20%'}}>{data.numActivities}</Text>
+                        </View>
                     </View>
-                    
-                    <View style={{flexDirection:'row', alignItems:'center'}}>
-                        <Icon
-                            name='comments'
-                            type='font-awesome-5'
-                            color='gray'
-                            size={18}
-                        />
-                        <Text style={{color:'#555', fontWeight:'700', fontSize:13, marginLeft:'8%'}}>1.0k</Text>
-                    </View>
-                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center'}}>
-                        <Icon
-                            name='share'
-                            type='foundation'
-                            color='gray'
-                            size={18}
-                        />
-                        <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginLeft:'8%'}}>Share</Text>
-                    </TouchableOpacity>
 
-                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center'}}>
-                        <Icon
-                            name='bookmark'
-                            type='foundation'
-                            color='gray'
-                            size={18}
-                        />
-                        <Text style={{color:'#555', fontWeight:'600', fontSize:13, marginLeft:'8%'}}>Bookmark</Text>
-                    </TouchableOpacity>
+                    <Text style={{color:'#555', fontWeight:'400', fontSize:13, marginLeft:'8%'}}>Project Idea</Text>
+                   
                     
                 </View>
 
@@ -225,30 +217,39 @@ export default class Feed extends React.Component{
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.container}>
                     <View style={styles.header}>
-                        <Avatar
-                            rounded
-                            icon={{name: 'user', type: 'font-awesome'}}
-                            containerStyle={{backgroundColor:'blue'}}
-                            onPress={()=>this.props.route.params.openControlPanel()}
-                        />
-                        <TouchableOpacity style={styles.searchBar}>
+                        <View style={{flexDirection:'row', alignItems:'center'}}>
                             <Icon
-                                name='magnifying-glass'
-                                type='foundation'
+                                name='bars'
+                                type='font-awesome-5'
                                 color='gray'
-                                size={18}
+                                size={20}
+                                onPress={()=>this.props.route.params.openControlPanel()}
                             />
-                            <Text style={{color:'gray', fontWeight:'500', marginLeft:'4%'}}>Search</Text>
-                        </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.notification} onPress={()=>this.props.navigation.push('Notification', {})}>
-                            <Icon
-                                name='bell'
-                                type='font-awesome'
-                                color='#F7CF3A'
-                                size={25}
-                            />
-                        </TouchableOpacity>
+                            <Text style={{color:'black', fontWeight:'500', fontSize:18, marginLeft:'15%'}}>Zing</Text>
+                        </View>
+                        
+
+                        <View style={{flexDirection:'row', width: '17%', justifyContent:'space-between'}}>
+                            <TouchableOpacity style={styles.notification} onPress={()=>this.props.navigation.push('Notification', {})}>
+                                <Icon
+                                    name='magnifying-glass'
+                                    type='foundation'
+                                    color='gray'
+                                    size={20}
+                                    
+                                />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.notification} onPress={()=>this.props.navigation.push('Notification', {})}>
+                                <Icon
+                                    name='bell'
+                                    type='font-awesome'
+                                    color='#F7CF3A'
+                                    size={20}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     <FlatList
                         data={this.state.feed}
@@ -265,20 +266,22 @@ export default class Feed extends React.Component{
 const styles = StyleSheet.create({
     safeArea: {
       flex: 1,
-      backgroundColor: 'white',
+      backgroundColor: '#FAFAFA',
       
     },
 
     container:{
         flex:1,
-        backgroundColor:'#F1F2F4',
+        backgroundColor:'#FAFAFA',
     },
 
     header:{
-        backgroundColor:'white',
-        padding:'2.5%',
+        backgroundColor:'#FAFAFA',
+        paddingVertical:'2.5%',
+        paddingHorizontal:'7%',
         flexDirection:"row",
         justifyContent:"space-between",
+        alignItems:'center'
     },
 
     searchBar:{
@@ -301,15 +304,22 @@ const styles = StyleSheet.create({
   const feed = StyleSheet.create({
     container:{
         backgroundColor:'white',
-        paddingVertical:'2%',
-        paddingHorizontal:'4%',
-        marginTop:'2%'
+        paddingVertical:'5%',
+        paddingHorizontal:'6%',
+        marginTop:'5%',
+        marginHorizontal:"5%",
+        borderRadius:9,
+        shadowOpacity: 0.06,
+        shadowOffset:{
+            width:0,
+            height: 15
+        }
     },
 
     header:{
         flexDirection:'row',
         alignItems:'center',
-        justifyContent:'space-between'
+        justifyContent:'space-between',
     },
 
     footer:{

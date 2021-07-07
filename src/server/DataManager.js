@@ -276,11 +276,23 @@ const DataManager = {
     },
 
     sendMessage: async function(chatroom, content){
+        console.log(content)
         firebase
         .database()
         .ref('/chatrooms/' + chatroom)
         .update({
-            messages: content
+            messages: content, 
+            lastMessage: content[0].text
+        })
+    },
+
+    createBookmark: async function(id){
+        const db = firebase.firestore()
+        db
+        .collection('users')
+        .doc(firebase.auth().currentUser.uid)
+        .update({
+            bookmarks: firebase.firestore.FieldValue.arrayUnion(id)
         })
     }
 }

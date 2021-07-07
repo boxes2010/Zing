@@ -1,4 +1,5 @@
 import React from 'react';
+import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, TextInput } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,11 +15,12 @@ import { LinkPreview } from '@flyerhq/react-native-link-preview'
 import Drawer from 'react-native-drawer'
 import firebase from 'firebase'
 import Message from './Message/MessageNavigation'
+import Friends from './Notification.js/Friends'
 const Tab = createBottomTabNavigator();
 
 function CustomTabBar({ state, descriptors, navigation, showPostEditor}) {
     return (
-      <View style={{ flexDirection: 'row',backgroundColor:"white",justifyContent:"center",alignItems:"center", paddingVertical:'4%', borderTopWidth: 0.3, borderColor: "#ccc", height: '8%' }}>
+      <View style={{ flexDirection: 'row',backgroundColor:"white",justifyContent:"center",alignItems:"center", paddingVertical:'4%', height: '10.5%', shadowOpacity:0.04, shadowOffset:{width:0, height: -5} }}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const label =
@@ -57,7 +59,7 @@ function CustomTabBar({ state, descriptors, navigation, showPostEditor}) {
             iconName = "user"
           }else if(label === "button"){
             return(
-                <TouchableOpacity onPress={()=>showPostEditor()}>
+                <TouchableOpacity onPress={()=>showPostEditor()} style={{marginBottom:'3%'}}>
                     <Avatar
                         rounded
                         icon={{name: 'plus', type: 'font-awesome'}}
@@ -75,13 +77,13 @@ function CustomTabBar({ state, descriptors, navigation, showPostEditor}) {
               testID={options.tabBarTestID}
               onPress={onPress}
               onLongPress={onLongPress}
-              style={{ flex: 1, alignItems:"center" }}
+              style={{ flex: 1, alignItems:"center", marginBottom:'3%' }}
             >
               <Icon
                 name={iconName}
                 type='font-awesome-5'
                 color='gray'
-                size={22}
+                size={19}
               />
               
             </TouchableOpacity>
@@ -733,68 +735,83 @@ export default class TabNavigation extends React.Component{
         )
     }
 
+    
+
     renderDrawer = () =>{
         return(
             <SafeAreaView style={drawer.container}>
-                <Icon
-                    name='x'
-                    type='foundation'
-                    color='gray'
-                    size={25}
-                    style={{marginLeft:'5%', marginTop:'7%'}}
-                />
-                <View style={drawer.name}>
-                    <Avatar
-                        rounded
-                        icon={{name: 'user', type: 'font-awesome'}}
-                        containerStyle={{backgroundColor:'blue'}}
-                        size={40}
-                    />
-                    <Text style={{color:'black', fontWeight:'700', fontSize:30}}>{firebase.auth().currentUser.displayName}</Text>
-                </View>
-
+            
                 <View style={drawer.pages}>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'10%', marginVertical:'20%'}}>
+                        <Avatar
+                            rounded
+                            icon={{name: 'user', type: 'font-awesome'}}
+                            containerStyle={{backgroundColor:'blue'}}
+                            size={40}
+                        />
+                    </TouchableOpacity>
+    
                     
-                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}}>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'8%', marginTop:'5%'}}>
                         <Icon
                             name='bookmark'
                             type='font-awesome-5'
                             color='gray'
-                            size={18}
-                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                            size={16}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'9%'}}
                         />
-                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Saved Posts</Text>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:14}}>SAVED POSTS</Text>
                     </TouchableOpacity >
-                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}}>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'8%'}}>
                         <Icon
                             name='chart-bar'
                             type='font-awesome-5'
                             color='gray'
-                            size={18}
-                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                            size={16}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'9%'}}
                         />
-                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Stats</Text>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:14}}>STATS</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}}>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'8%'}}>
+                        <Icon
+                            name='chart-bar'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={16}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'9%'}}
+                        />
+                        <Text style={{color:'black', fontWeight:'400', fontSize:14}}>HISTORY</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'8%'}}>
+                        <Icon
+                            name='chart-bar'
+                            type='font-awesome-5'
+                            color='gray'
+                            size={16}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'9%'}}
+                        />
+                        <Text style={{color:'black', fontWeight:'400', fontSize:14}}>FRIENDS</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'8%'}}>
                         <Icon
                             name='cog'
                             type='font-awesome-5'
                             color='gray'
-                            size={18}
-                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                            size={16}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'9%'}}
                         />
-                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Settings</Text>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:14}}>SETTINGS</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'5%'}} onPress={()=> this.authSignOut()}>
+                    <TouchableOpacity style={{flexDirection:'row', alignItems:'center', marginLeft:'5%', marginBottom:'8%'}} onPress={()=> this.authSignOut()}>
                         <Icon
                             name='sign-out-alt'
                             type='font-awesome-5'
                             color='gray'
-                            size={18}
-                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'7%'}}
+                            size={16}
+                            style={{marginLeft:'5%', marginTop:'7%', marginRight:'9%'}}
                         />
-                        <Text style={{color:'black', fontWeight:'600', fontSize:18}}>Sign Out</Text>
+                        <Text style={{color:'black', fontWeight:'400', fontSize:14}}>SIGN OUT</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -814,10 +831,9 @@ export default class TabNavigation extends React.Component{
                 panCloseMask={0.2}
                 closedDrawerOffset={-3}
             >
+                <StatusBar/>
+
                 <NavigationContainer>
-                    <Modal isVisible={this.state.chooseTypeModalVisible} backdropOpacity={1.0} backgroundColor='white' style={{margin:'0%', alignItems:'flex-start',  justifyContent:'flex-start'}}>
-                        {this.renderChooseTypeModal()}
-                    </Modal>
                     <Tab.Navigator tabBar={props => <CustomTabBar {...props} showPostEditor={()=>this.setState({chooseTypeModalVisible:true})} />}>
                         <Tab.Screen name="Feed" component={FeedNavigation} initialParams={{openControlPanel: this.openControlPanel, closeControlPanel: this.closeControlPanel}}/>
                         <Tab.Screen name="button" component={FeedNavigation} />
@@ -898,13 +914,12 @@ const modal = StyleSheet.create({
 
 const drawer = StyleSheet.create({
     container:{
-        backgroundColor:'white',
-        paddingHorizontal:'3%',
+        backgroundColor:'#FAFAFA',
+
         flex:1,
         alignItems:"flex-start",
-        shadowOpacity:0.4,
 
-        width:'99%'
+        width:'100%'
     },
 
     name:{
@@ -914,8 +929,6 @@ const drawer = StyleSheet.create({
     pages:{
         marginTop:'5%',
         paddingTop:'5%',
-        borderTopWidth:0.5,
-        borderColor:'#eee',
         width:"100%"
     }
 
